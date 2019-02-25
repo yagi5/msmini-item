@@ -10,6 +10,7 @@ test-coverage-reviewdog:
 		echo "Installing/Updating $$tool" ; \
 		go get -u $$tool; \
 	done
+	@go get github.com/golang/dep/cmd/dep
 	@dep ensure -v -vendor-only
 	@go test -race -coverpkg=./... -coverprofile=coverage.txt ./...
 	@go get github.com/haya14busa/reviewdog/cmd/reviewdog
