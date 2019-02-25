@@ -1,0 +1,38 @@
+version: 2
+defaults: &defaults
+  working_directory: /go/src/github.com/yagi5/msmini-item
+
+golang: &golang
+  <<: *defaults
+  docker:
+    - image: golang
+      environment:
+        TZ: Asia/Tokyo
+
+jobs:
+  test:
+    <<: *golang
+    steps:
+      - checkout
+      - run:
+          name: Run test and collect coverages
+          command: |
+            make test-coverage-reviewdog
+      - run:
+          name: Upload coverages to codecov
+          command: |
+            bash <(curl -s https://codecov.io/bash)
+
+filters: &filters
+  filters:
+    branches:
+      only: /.*/
+    tags:
+      only: /.*/
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - test:
+          <<: *filters
