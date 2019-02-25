@@ -7,7 +7,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
 	"github.com/yagi5/msmini-item/domain/data"
-	"github.com/yagi5/msmini-item/usecase/repository"
+	"github.com/yagi5/msmini-item/domain/repository"
 )
 
 func TestSearch(t *testing.T) {

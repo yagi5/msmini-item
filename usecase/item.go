@@ -5,7 +5,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/yagi5/msmini-item/domain/data"
-	"github.com/yagi5/msmini-item/usecase/repository"
+	"github.com/yagi5/msmini-item/domain/repository"
 )
 
 // Repositories is structured repositories
