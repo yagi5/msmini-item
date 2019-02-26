@@ -2,6 +2,7 @@ package item
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -11,62 +12,21 @@ import (
 	"github.com/yagi5/msmini-item/infrastructure/spanner"
 )
 
-func getTestRows() []*gspanner.Row {
-	l := "2006-01-02 15:04:05"
-	t1, _ := time.Parse(l, "2018-01-01 12:30:00")
-	t2, _ := time.Parse(l, "2018-01-02 12:30:00")
-	item1, _ := gspanner.NewRow([]string{
-		"id", "name", "description", "price", "category", "createdAt", "updatedAt",
-	}, []interface{}{
-		"id1", "name1", "des1", 100, "Book", t1, t2,
-	})
-	item2, _ := gspanner.NewRow([]string{
-		"id", "name", "description", "price", "category", "createdAt", "updatedAt",
-	}, []interface{}{
-		"id2", "name2", "des2", 200, "Book", t1, t2,
-	})
-	item3, _ := gspanner.NewRow([]string{
-		"id", "name", "description", "price", "category", "createdAt", "updatedAt",
-	}, []interface{}{
-		"id3", "name3", "des3", 300, "Book", t1, t2,
-	})
-	return []*gspanner.Row{item1, item2, item3}
-}
-
-func getTestItems() []*data.Item {
-	l := "2006-01-02 15:04:05"
-	t1, _ := time.Parse(l, "2018-01-01 12:30:00")
-	t2, _ := time.Parse(l, "2018-01-02 12:30:00")
-	return []*data.Item{
-		&data.Item{
-			ID:          "id1",
-			Name:        "name1",
-			Description: "des1",
-			Price:       100,
-			Category:    data.Category("Book"),
-			CreatedAt:   t1,
-			UpdatedAt:   t2,
-		},
-		&data.Item{
-			ID:          "id2",
-			Name:        "name2",
-			Description: "des2",
-			Price:       200,
-			Category:    data.Category("Book"),
-			CreatedAt:   t1,
-			UpdatedAt:   t2,
-		},
-		&data.Item{
-			ID:          "id3",
-			Name:        "name3",
-			Description: "des3",
-			Price:       300,
-			Category:    data.Category("Book"),
-			CreatedAt:   t1,
-			UpdatedAt:   t2,
-		},
-	}
-}
+var t1 = time.Date(2018, time.January, 1, 12, 30, 0, 0, time.Local)
+var t2 = time.Date(2018, time.January, 2, 12, 30, 0, 0, time.Local)
+var item1 = &data.Item{ID: "id1", Name: "name1", Description: "des1", Price: 100, Category: data.Category("Book"), CreatedAt: t1, UpdatedAt: t2}
+var item2 = &data.Item{ID: "id2", Name: "name2", Description: "des2", Price: 200, Category: data.Category("Book"), CreatedAt: t1, UpdatedAt: t2}
+var item3 = &data.Item{ID: "id3", Name: "name3", Description: "des3", Price: 300, Category: data.Category("Book"), CreatedAt: t1, UpdatedAt: t2}
+var row1, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", "des1", 100, "Book", t1, t2})
+var row2, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id2", "name2", "des2", 200, "Book", t1, t2})
+var row3, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id3", "name3", "des3", 300, "Book", t1, t2})
+var invalidRow1, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{nil, "name1", "des1", 100, "Book", t1, t2})
+var invalidRow2, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", nil, "des1", 100, "Book", t1, t2})
+var invalidRow3, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", nil, 100, "Book", t1, t2})
+var invalidRow4, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", "des1", nil, "Book", t1, t2})
+var invalidRow5, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", "des1", 100, nil, t1, t2})
+var invalidRow6, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", "des1", 100, "Book", nil, t2})
+var invalidRow7, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", "des1", 100, "Book", t1, nil})
 
 func TestSearchByName(t *testing.T) {
 	var tests = []struct {
@@ -88,10 +48,66 @@ func TestSearchByName(t *testing.T) {
 				if diff := cmp.Diff(stmt.Params, map[string]interface{}{"name": "go programming language", "limit": int64(20)}); diff != "" {
 					t.Fatalf("params invalid: %v", diff)
 				}
-				return getTestRows(), nil
+				return []*gspanner.Row{row1, row2, row3}, nil
 			},
 			wantErr:  false,
-			expected: getTestItems(),
+			expected: []*data.Item{item1, item2, item3},
+		},
+		{
+			name: "return error",
+			mockQuery: func(ctx context.Context, stmt gspanner.Statement) ([]*gspanner.Row, error) {
+				return nil, errors.New("")
+			},
+			wantErr: true,
+		},
+		{
+			name: "return error",
+			mockQuery: func(ctx context.Context, stmt gspanner.Statement) ([]*gspanner.Row, error) {
+				return []*gspanner.Row{invalidRow1}, nil
+			},
+			wantErr: true,
+		},
+		{
+			name: "return error",
+			mockQuery: func(ctx context.Context, stmt gspanner.Statement) ([]*gspanner.Row, error) {
+				return []*gspanner.Row{invalidRow2}, nil
+			},
+			wantErr: true,
+		},
+		{
+			name: "return error",
+			mockQuery: func(ctx context.Context, stmt gspanner.Statement) ([]*gspanner.Row, error) {
+				return []*gspanner.Row{invalidRow3}, nil
+			},
+			wantErr: true,
+		},
+		{
+			name: "return error",
+			mockQuery: func(ctx context.Context, stmt gspanner.Statement) ([]*gspanner.Row, error) {
+				return []*gspanner.Row{invalidRow4}, nil
+			},
+			wantErr: true,
+		},
+		{
+			name: "return error",
+			mockQuery: func(ctx context.Context, stmt gspanner.Statement) ([]*gspanner.Row, error) {
+				return []*gspanner.Row{invalidRow5}, nil
+			},
+			wantErr: true,
+		},
+		{
+			name: "return error",
+			mockQuery: func(ctx context.Context, stmt gspanner.Statement) ([]*gspanner.Row, error) {
+				return []*gspanner.Row{invalidRow6}, nil
+			},
+			wantErr: true,
+		},
+		{
+			name: "return error",
+			mockQuery: func(ctx context.Context, stmt gspanner.Statement) ([]*gspanner.Row, error) {
+				return []*gspanner.Row{invalidRow7}, nil
+			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
