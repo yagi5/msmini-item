@@ -1,5 +1,6 @@
 ignore:
   - main.go
+  - infrastructure/spanner/*.go
 coverage:
   range: "70..90"
   round: down
