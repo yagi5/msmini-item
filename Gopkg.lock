@@ -19,9 +19,19 @@
   version = "v0.36.0"
 
 [[projects]]
-  digest = "1:ec0bde6dc8cf3cb9254f79603bd8489c366a0a8584949cac5a73fa10b9f47c21"
+  digest = "1:ec6f9bf5e274c833c911923c9193867f3f18788c461f76f05f62bb1510e0ae65"
+  name = "github.com/go-sql-driver/mysql"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "72cd26f257d44c1114970e19afddcd812016007e"
+  version = "v1.4.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:d1e69ed53a8d9c021c0b6a9ef525903fc18401c71ffd12ec383c3e8f9580fe6b"
   name = "github.com/golang/protobuf"
   packages = [
+    "jsonpb",
     "proto",
     "protoc-gen-go/descriptor",
     "ptypes",
@@ -32,8 +42,7 @@
     "ptypes/timestamp",
   ]
   pruneopts = "UT"
-  revision = "aa810b61a9c79d51363740d207bb46cf8e620ed5"
-  version = "v1.2.0"
+  revision = "b5d812f8a3706043e23a9cd5babf2e5423744d30"
 
 [[projects]]
   digest = "1:2e3c336fc7fde5c984d2841455a658a6d626450b1754a854b3b32e7a8f49a07a"
@@ -49,12 +58,46 @@
   version = "v0.2.0"
 
 [[projects]]
+  digest = "1:6d9ec638c0f60d01a25e43940f20dff30cf8b468371ea4df54cbc5b73e07e223"
+  name = "github.com/grpc-ecosystem/go-grpc-middleware"
+  packages = [
+    ".",
+    "logging",
+    "logging/zap",
+    "logging/zap/ctxzap",
+    "tags",
+    "tags/zap",
+  ]
+  pruneopts = "UT"
+  revision = "c250d6563d4d4c20252cd865923440e829844f4e"
+  version = "v1.0.0"
+
+[[projects]]
+  digest = "1:6c41d4f998a03b6604227ccad36edaed6126c397e5d78709ef4814a1145a6757"
+  name = "github.com/jmoiron/sqlx"
+  packages = [
+    ".",
+    "reflectx",
+  ]
+  pruneopts = "UT"
+  revision = "d161d7a76b5661016ad0b085869f77fd410f3e6a"
+  version = "v1.2.0"
+
+[[projects]]
   digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
   name = "github.com/pkg/errors"
   packages = ["."]
   pruneopts = "UT"
   revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
   version = "v0.8.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:3bfad0c7ed2c862f653dd0e84c46f47778e1f19c5ba8994d3449d0101fc684b6"
+  name = "github.com/yagi5/msmini-proto"
+  packages = ["client/proto/item"]
+  pruneopts = "UT"
+  revision = "76453c0b3fcd76c587eb64eff8a8b51cb1b0b067"
 
 [[projects]]
   digest = "1:6cdff421bac25ecaf811743796cddca3de050c67b42bbbc817d8b7541bebd10a"
@@ -79,8 +122,39 @@
   version = "v0.19.0"
 
 [[projects]]
+  digest = "1:777e729b475d3895c7229552aa10076f0d177daf37c0a72258006d046d329960"
+  name = "go.uber.org/atomic"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "4e336646b2ef9fc6e47be8e21594178f98e5ebcf"
+  version = "v1.2.0"
+
+[[projects]]
+  digest = "1:60bf2a5e347af463c42ed31a493d817f8a72f102543060ed992754e689805d1a"
+  name = "go.uber.org/multierr"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3c4937480c32f4c13a875a1829af76c98ca3d40a"
+  version = "v1.1.0"
+
+[[projects]]
+  digest = "1:c52caf7bd44f92e54627a31b85baf06a68333a196b3d8d241480a774733dcf8b"
+  name = "go.uber.org/zap"
+  packages = [
+    ".",
+    "buffer",
+    "internal/bufferpool",
+    "internal/color",
+    "internal/exit",
+    "zapcore",
+  ]
+  pruneopts = "UT"
+  revision = "ff33455a0e382e8a81d14dd7c922020b6b5e7982"
+  version = "v1.9.1"
+
+[[projects]]
   branch = "master"
-  digest = "1:9d2f08c64693fbe7177b5980f80c35672c80f12be79bb3bc86948b934d70e4ee"
+  digest = "1:5b51b81e299d0dfd03f567fd8d8a2d7ee954b3b72c69292f07c49aae785b6dd9"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -93,11 +167,11 @@
     "trace",
   ]
   pruneopts = "UT"
-  revision = "3a22650c66bd7f4fb6d1e8072ffd7b75c8a27898"
+  revision = "16b79f2e4e95ea23b2bf9903c9809ff7b013ce85"
 
 [[projects]]
   branch = "master"
-  digest = "1:6ca682cc9faff447b8992389e20fd11e5e7366ba66768b2d0e2c12235fd3dec2"
+  digest = "1:5e9f22cf754ab20a5dff0ae04b12516b112c5b81cd44dccccde148865084d730"
   name = "golang.org/x/oauth2"
   packages = [
     ".",
@@ -107,15 +181,23 @@
     "jwt",
   ]
   pruneopts = "UT"
-  revision = "9b3c75971fc92dd27c6436a37c05c831498658f1"
+  revision = "e64efc72b421e893cbf63f17ba2221e7d6d0b0f3"
 
 [[projects]]
   branch = "master"
-  digest = "1:d0e9a312c4610a508569ab25e54d34600b1a96d19b1866ece104ffdf1c1b9d2c"
+  digest = "1:b521f10a2d8fa85c04a8ef4e62f2d1e14d303599a55d64dabf9f5a02f84d35eb"
+  name = "golang.org/x/sync"
+  packages = ["errgroup"]
+  pruneopts = "UT"
+  revision = "e225da77a7e68af35c70ccbf71af2b83e6acac3c"
+
+[[projects]]
+  branch = "master"
+  digest = "1:2b3af1b9e9da32687d49a1fc6eda120a66fbb07c615c6e6a126e7eee4790f9d8"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = "UT"
-  revision = "cc5685c2db1239775905f3911f0067c0fa74762f"
+  revision = "d455e41777fca6e8a5a79e34a14b8368bc11d9ba"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
@@ -154,10 +236,11 @@
   version = "v0.1.0"
 
 [[projects]]
-  digest = "1:c4eaa5f79d36f76ef4bd0c4f96e36bc1b7b5a359528d1267f0cb7a5d58b7b5bb"
+  digest = "1:f3eaad18c92a962f457bd8095a21c2b4aac494f1ea0b255a6ad60a871de2b13a"
   name = "google.golang.org/appengine"
   packages = [
     ".",
+    "cloudsql",
     "internal",
     "internal/app_identity",
     "internal/base",
@@ -185,10 +268,10 @@
     "googleapis/spanner/v1",
   ]
   pruneopts = "UT"
-  revision = "082222b4a5c572e33e82ee9162d1352c7cf38682"
+  revision = "4f5b463f9597cbe0dd13a6a2cd4f85e788d27508"
 
 [[projects]]
-  digest = "1:2bfad918329beeeeb3433da4745d4283f75c911352af2fc13cf23e294bff18d1"
+  digest = "1:0b2c1be6772e8a9a3cf80dbbcd23ecb34f1a136590695f2dc4a715cbedc8d864"
   name = "google.golang.org/grpc"
   packages = [
     ".",
@@ -217,6 +300,8 @@
     "metadata",
     "naming",
     "peer",
+    "reflection",
+    "reflection/grpc_reflection_v1alpha",
     "resolver",
     "resolver/dns",
     "resolver/passthrough",
@@ -225,16 +310,27 @@
     "tap",
   ]
   pruneopts = "UT"
-  revision = "a02b0774206b209466313a0b525d2c738fe407eb"
-  version = "v1.18.0"
+  revision = "2fdaae294f38ed9a121193c51ec99fecd3b13eb7"
+  version = "v1.19.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
     "cloud.google.com/go/spanner",
+    "github.com/go-sql-driver/mysql",
+    "github.com/golang/protobuf/ptypes",
     "github.com/google/go-cmp/cmp",
+    "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap",
+    "github.com/jmoiron/sqlx",
     "github.com/pkg/errors",
+    "github.com/yagi5/msmini-proto/client/proto/item",
+    "go.uber.org/zap",
+    "go.uber.org/zap/zapcore",
+    "golang.org/x/sync/errgroup",
+    "google.golang.org/api/iterator",
+    "google.golang.org/grpc",
+    "google.golang.org/grpc/reflection",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

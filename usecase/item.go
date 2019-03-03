@@ -8,23 +8,25 @@ import (
 	"github.com/yagi5/msmini-item/domain/repository"
 )
 
-// Repositories is structured repositories
-type Repositories struct {
-	Item repository.Item
+// Item is item usecase
+type Item interface {
+	Search(context.Context, *ItemSearchInput) ([]*data.Item, error)
 }
 
-// ItemUsecase usecase handler
-type ItemUsecase struct {
-	repos Repositories
+// Item usecase handler
+type item struct {
+	itemRepo repository.Item
+}
+
+// New returns item usecase
+func New(r repository.Item) Item {
+	return item{itemRepo: r}
 }
 
 // Search returns items queried by input
-func (u ItemUsecase) Search(ctx context.Context, in *ItemSearchInput) ([]*data.Item, error) {
+func (u item) Search(ctx context.Context, in *ItemSearchInput) ([]*data.Item, error) {
 	if in.Limit == 0 {
 		in.Limit = 20 // Default
 	}
-	if in.Name == "" {
-		return nil, errors.New("name is required")
-	}
-	return u.repos.Item.SearchByName(ctx, in.Name, in.Limit)
+	return u.itemRepo.SearchByName(ctx, in.Name, in.Limit)
 }

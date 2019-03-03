@@ -6,7 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/yagi5/msmini-item/domain/data"
-	"github.com/yagi5/msmini-item/infrastructure/spanner"
+	"github.com/yagi5/msmini-item/domain/repository"
 )
 
 // Client contains spanner client
@@ -14,9 +14,17 @@ type Client struct {
 	spanner spanner.Spanner
 }
 
+// New returns item repotisory client
+func New() repository.Item {
+	return &Client{}
+}
+
 // SearchByName returns searched result
 func (c *Client) SearchByName(ctx context.Context, name string, limit int64) ([]*data.Item, error) {
-	sql := "SELECT * FROM ITEMS WHERE STARTS_WITH(Name, @name) LIMIT @limit"
+	sql := "SELECT * FROM ITEMS LIMIT @limit"
+	if name != "" {
+		sql = "SELECT * FROM ITEMS WHERE STARTS_WITH(Name, @name) LIMIT @limit"
+	}
 	params := map[string]interface{}{"name": name, "limit": limit}
 	stmt := spanner.NewStatement(sql, params)
 	rows, err := c.spanner.Query(ctx, stmt)
