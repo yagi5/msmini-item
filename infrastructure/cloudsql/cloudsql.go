@@ -8,9 +8,18 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
-	"github.com/yagi5/msmini-item/domain/data"
 	"github.com/yagi5/msmini-item/domain/repository"
 )
+
+// CloudSQL is GCP CloudSQL interface
+type CloudSQL interface {
+	Queryer
+}
+
+// Queryer provides Read()
+type Queryer interface {
+	Query(ctx context.Context, query string, args ...interface{}) *sqlx.Row
+}
 
 // Client is MySQL Client
 type Client struct {
@@ -26,7 +35,7 @@ func New(u, pw, host, port, db string) (repository.Item, error) {
 	return &Client{db: d}, nil
 }
 
-// SearchByName returns searched result
-func (c *Client) SearchByName(ctx context.Context, name string, limit int64) ([]*data.Item, error) {
-	return nil, nil
+// Query implements Queryer
+func (c *Client) Query(ctx context.Context, query string, args ...interface{}) *sqlx.Row {
+	return c.db.QueryRowxContext(ctx, query, args)
 }

@@ -7,11 +7,14 @@ import (
 	"github.com/pkg/errors"
 	"github.com/yagi5/msmini-item/domain/data"
 	"github.com/yagi5/msmini-item/domain/repository"
+	"github.com/yagi5/msmini-item/infrastructure/cloudsql"
+	"github.com/yagi5/msmini-item/infrastructure/spanner"
 )
 
 // Client contains spanner client
 type Client struct {
 	spanner spanner.Spanner
+	csql    cloudsql.CloudSQL
 }
 
 // New returns item repotisory client
@@ -74,4 +77,9 @@ func (c *Client) SearchByName(ctx context.Context, name string, limit int64) ([]
 		items = append(items, item)
 	}
 	return items, nil
+}
+
+// SearchByName returns searched result
+func (c *Client) SearchByName(ctx context.Context, name string, limit int64) ([]*data.Item, error) {
+	return nil, nil
 }

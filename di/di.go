@@ -4,7 +4,7 @@ import (
 	"net"
 
 	"github.com/yagi5/msmini-item/grpc"
-	"github.com/yagi5/msmini-item/infrastructure/item"
+	"github.com/yagi5/msmini-item/infrastructure/spanner"
 	"github.com/yagi5/msmini-item/usecase"
 	ggrpc "google.golang.org/grpc"
 )
@@ -29,7 +29,7 @@ func New() Di {
 
 // GetContainer is implementation of di interface
 func (c *client) GetContainer() (*Container, error) {
-	repo := item.New()
+	repo := spanner.New()
 	usecase := usecase.New(repo)
 	grpcS := grpc.New(usecase)
 	grpcL, err := net.Listen("tcp", ":10001")

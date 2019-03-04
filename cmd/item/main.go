@@ -6,7 +6,6 @@ import (
 	golog "log"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"

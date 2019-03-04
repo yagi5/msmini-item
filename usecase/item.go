@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 
-	"github.com/pkg/errors"
 	"github.com/yagi5/msmini-item/domain/data"
 	"github.com/yagi5/msmini-item/domain/repository"
 )
