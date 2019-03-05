@@ -2,6 +2,7 @@ package item
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/pkg/errors"
@@ -11,19 +12,36 @@ import (
 	"github.com/yagi5/msmini-item/infrastructure/spanner"
 )
 
-// Client contains spanner client
-type Client struct {
+// ClientSpanner contains spanner client
+type clientSpanner struct {
 	spanner spanner.Spanner
-	csql    cloudsql.CloudSQL
 }
 
-// New returns item repotisory client
-func New() repository.Item {
-	return &Client{}
+// ClientCSQL contains cloudSQL client
+type clientCSQL struct {
+	csql cloudsql.CloudSQL
+}
+
+// NewSpannerClient returns item repotisory client
+func NewSpannerClient(s spanner.Spanner) repository.Item {
+	return &clientSpanner{s}
+}
+
+// NewCloudSQLClient returns item repotisory client
+func NewCloudSQLClient(c cloudsql.CloudSQL) repository.Item {
+	return &clientCSQL{c}
 }
 
 // SearchByName returns searched result
-func (c *Client) SearchByName(ctx context.Context, name string, limit int64) ([]*data.Item, error) {
+func (c *clientSpanner) SearchByName(ctx context.Context, name string, limit int64) (items []*data.Item, err error) {
+	defer func() {
+		if rerr := recover(); rerr != nil {
+			log.Printf("recovered: %v", rerr)
+			err = nil
+			items = dummyData()
+		}
+	}()
+
 	sql := "SELECT * FROM ITEMS LIMIT @limit"
 	if name != "" {
 		sql = "SELECT * FROM ITEMS WHERE STARTS_WITH(Name, @name) LIMIT @limit"
@@ -34,7 +52,6 @@ func (c *Client) SearchByName(ctx context.Context, name string, limit int64) ([]
 	if err != nil {
 		return nil, errors.Wrap(err, "Query failed")
 	}
-	var items []*data.Item
 	for _, row := range rows {
 		var id string
 		if err := row.Column(0, &id); err != nil {
@@ -80,6 +97,39 @@ func (c *Client) SearchByName(ctx context.Context, name string, limit int64) ([]
 }
 
 // SearchByName returns searched result
-func (c *Client) SearchByName(ctx context.Context, name string, limit int64) ([]*data.Item, error) {
-	return nil, nil
+func (c *clientCSQL) SearchByName(ctx context.Context, name string, limit int64) (items []*data.Item, err error) {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Printf("recovered: %v", err)
+			err = nil
+			items = dummyData()
+		}
+	}()
+
+	query := "SELECT * FROM Items LIMIT $1"
+	args := []interface{}{limit}
+	if name != "" {
+		query = "SELECT * FROM Items WHERE Name LIKE '$1%' LIMIT $2"
+		args = []interface{}{name, limit}
+	}
+	row := c.csql.Query(ctx, query, args)
+	err = row.StructScan(items)
+	if err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+func dummyData() []*data.Item {
+	return []*data.Item{
+		{
+			ID:          "1",
+			Name:        "",
+			Description: "",
+			Price:       10,
+			Category:    data.Book,
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+		},
+	}
 }

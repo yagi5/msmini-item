@@ -22,8 +22,8 @@ type Client struct {
 	client *spanner.Client
 }
 
-// NewClient returns spanner client
-func NewClient(c *spanner.Client) *Client {
+// New returns spanner client
+func New(c *spanner.Client) Spanner {
 	return &Client{c}
 }
 

@@ -8,7 +8,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
-	"github.com/yagi5/msmini-item/domain/repository"
 )
 
 // CloudSQL is GCP CloudSQL interface
@@ -27,7 +26,7 @@ type Client struct {
 }
 
 // New returns client
-func New(u, pw, host, port, db string) (repository.Item, error) {
+func New(u, pw, host, port, db string) (CloudSQL, error) {
 	d, err := sqlx.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", u, pw, host, port, db))
 	if err != nil {
 		return nil, errors.Wrap(err, "could not open mysql connection")
