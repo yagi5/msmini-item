@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/yagi5/msmini-item/domain/data"
 	"github.com/yagi5/msmini-item/domain/repository"
+	"github.com/yagi5/msmini-item/log"
 )
 
 func TestSearch(t *testing.T) {
@@ -18,11 +19,6 @@ func TestSearch(t *testing.T) {
 		given          *ItemSearchInput
 		expected       []*data.Item
 	}{
-		{
-			name:    "name is empty",
-			wantErr: true,
-			given:   &ItemSearchInput{},
-		},
 		{
 			name:  "Limit has default value",
 			given: &ItemSearchInput{Name: "test"},
@@ -54,8 +50,7 @@ func TestSearch(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			repos := Repositories{Item: &repository.ItemMock{SearchByNameMock: tt.mockSearchFunc}}
-			iu := ItemUsecase{repos: repos}
+			iu := item{itemRepo: &repository.ItemMock{SearchByNameMock: tt.mockSearchFunc}, logger: log.NewNop()}
 			actual, err := iu.Search(context.Background(), tt.given)
 			if (err != nil) != tt.wantErr {
 				if err != nil {

@@ -15,3 +15,6 @@ test-coverage-reviewdog:
 	@go test -race -coverpkg=./... -coverprofile=coverage.txt ./...
 	@go get github.com/haya14busa/reviewdog/cmd/reviewdog
 	@reviewdog -conf=.reviewdog.yml -diff="git diff master" -reporter=github-pr-review
+
+test-local:
+	go test -race -cover ./...

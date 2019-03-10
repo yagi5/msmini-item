@@ -38,6 +38,11 @@ func New() (*Logger, error) {
 	return &Logger{l}, err
 }
 
+// NewNop returns nop logger
+func NewNop() *Logger {
+	return &Logger{L: zap.NewNop()}
+}
+
 // Info writes out info log
 func (l *Logger) Info(msg string, fields ...*Field) {
 	fs := []zap.Field{}

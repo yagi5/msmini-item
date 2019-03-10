@@ -114,7 +114,7 @@ func TestSearchByName(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			ms := &spanner.Mock{MockQuery: tt.mockQuery}
-			c := Client{spanner: ms}
+			c := spannerClient{spanner: ms}
 			items, err := c.SearchByName(context.Background(), tt.itemName, tt.limit)
 			if (err != nil) != tt.wantErr {
 				if err != nil {
