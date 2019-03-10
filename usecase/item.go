@@ -5,6 +5,7 @@ import (
 
 	"github.com/yagi5/msmini-item/domain/data"
 	"github.com/yagi5/msmini-item/domain/repository"
+	"github.com/yagi5/msmini-item/log"
 )
 
 // Item is item usecase
@@ -15,15 +16,17 @@ type Item interface {
 // Item usecase handler
 type item struct {
 	itemRepo repository.Item
+	logger   *log.Logger
 }
 
 // New returns item usecase
-func New(r repository.Item) Item {
-	return item{itemRepo: r}
+func New(logger *log.Logger, r repository.Item) Item {
+	return item{logger: logger, itemRepo: r}
 }
 
 // Search returns items queried by input
 func (u item) Search(ctx context.Context, in *ItemSearchInput) ([]*data.Item, error) {
+	u.logger.Info("search start", log.F("name", in.Name))
 	if in.Limit == 0 {
 		in.Limit = 20 // Default
 	}

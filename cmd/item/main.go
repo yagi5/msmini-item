@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	"github.com/yagi5/msmini-item/di"
@@ -28,12 +29,18 @@ func realMain(args []string) int {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	grpcLogger, err := log.New("ERROR")
+	loc, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		loc = time.FixedZone("Asia/Tokyo", 9*60*60)
+	}
+	time.Local = loc
+
+	logger, err := log.New()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "[ERROR] Failed to setup logger: %s\n", err)
 		return exitError
 	}
-	grpc_zap.ReplaceGrpcLogger(grpcLogger)
+	grpc_zap.ReplaceGrpcLogger(logger.L)
 
 	container, err := di.New().GetContainer()
 	if err != nil {

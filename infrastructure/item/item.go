@@ -2,7 +2,9 @@ package item
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/pkg/errors"
@@ -12,33 +14,40 @@ import (
 	"github.com/yagi5/msmini-item/infrastructure/spanner"
 )
 
-// ClientSpanner contains spanner client
-type clientSpanner struct {
+// spannerClient contains spanner client
+type spannerClient struct {
 	spanner spanner.Spanner
 }
 
-// ClientCSQL contains cloudSQL client
-type clientCSQL struct {
+// csqlClient contains cloudSQL client
+type csqlClient struct {
 	csql cloudsql.CloudSQL
 }
 
-// NewSpannerClient returns item repotisory client
+// dummyClient returns dummy data client
+type dummyClient struct{}
+
+// NewSpannerClient returns item repository client
 func NewSpannerClient(s spanner.Spanner) repository.Item {
-	return &clientSpanner{s}
+	return &spannerClient{s}
 }
 
-// NewCloudSQLClient returns item repotisory client
+// NewCloudSQLClient returns item repository client
 func NewCloudSQLClient(c cloudsql.CloudSQL) repository.Item {
-	return &clientCSQL{c}
+	return &csqlClient{c}
+}
+
+// NewDummyClient returns item repository client
+func NewDummyClient() repository.Item {
+	return &dummyClient{}
 }
 
 // SearchByName returns searched result
-func (c *clientSpanner) SearchByName(ctx context.Context, name string, limit int64) (items []*data.Item, err error) {
+func (c *spannerClient) SearchByName(ctx context.Context, name string, limit int64) (items []*data.Item, err error) {
 	defer func() {
 		if rerr := recover(); rerr != nil {
 			log.Printf("recovered: %v", rerr)
-			err = nil
-			items = dummyData()
+			items, err = NewDummyClient().SearchByName(ctx, name, limit)
 		}
 	}()
 
@@ -97,12 +106,11 @@ func (c *clientSpanner) SearchByName(ctx context.Context, name string, limit int
 }
 
 // SearchByName returns searched result
-func (c *clientCSQL) SearchByName(ctx context.Context, name string, limit int64) (items []*data.Item, err error) {
+func (c *csqlClient) SearchByName(ctx context.Context, name string, limit int64) (items []*data.Item, err error) {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Printf("recovered: %v", err)
-			err = nil
-			items = dummyData()
+			items, err = NewDummyClient().SearchByName(ctx, name, limit)
 		}
 	}()
 
@@ -120,16 +128,20 @@ func (c *clientCSQL) SearchByName(ctx context.Context, name string, limit int64)
 	return items, nil
 }
 
-func dummyData() []*data.Item {
-	return []*data.Item{
-		{
-			ID:          "1",
-			Name:        "",
-			Description: "",
-			Price:       10,
+// SearchByName returns searched result
+func (c *dummyClient) SearchByName(ctx context.Context, name string, limit int64) ([]*data.Item, error) {
+	items := []*data.Item{}
+	for i := 1; i <= 300; i++ {
+		item := &data.Item{
+			ID:          strconv.Itoa(i),
+			Name:        fmt.Sprintf("dummy item #%d", i),
+			Description: fmt.Sprintf("description for dummy item #%d", i),
+			Price:       int64(i),
 			Category:    data.Book,
-			CreatedAt:   time.Now(),
-			UpdatedAt:   time.Now(),
-		},
+			CreatedAt:   time.Date(2019, time.February, 10, 12, 0, 0, i, time.Local),
+			UpdatedAt:   time.Date(2019, time.February, 10, 12, 0, 0, i, time.Local),
+		}
+		items = append(items, item)
 	}
+	return items, nil
 }
