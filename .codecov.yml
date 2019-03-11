@@ -1,9 +1,10 @@
 ignore:
-  - main.go
+  - cmd/item/main.go
   - infrastructure/spanner/*.go
   - infrastructure/cloudsql/*.go
   - infrastructure/dummy/*.go
   - log/log.go
+  - error/error.go
 coverage:
   range: "70..90"
   round: down
