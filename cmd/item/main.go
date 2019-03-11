@@ -42,7 +42,7 @@ func realMain(args []string) int {
 	}
 	grpc_zap.ReplaceGrpcLogger(logger.L)
 
-	container, err := di.New().GetContainer()
+	container, err := di.New().Container()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "[ERROR] Failed to setup di container: %s\n", err)
 		return exitError
