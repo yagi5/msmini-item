@@ -12,23 +12,22 @@ import (
 	"github.com/yagi5/msmini-item/infrastructure/spanner"
 )
 
-var t1 = time.Date(2018, time.January, 1, 12, 30, 0, 0, time.Local)
-var t2 = time.Date(2018, time.January, 2, 12, 30, 0, 0, time.Local)
-var item1 = &data.Item{ID: "id1", Name: "name1", Description: "des1", Price: 100, Category: data.Category("Book"), CreatedAt: t1, UpdatedAt: t2}
-var item2 = &data.Item{ID: "id2", Name: "name2", Description: "des2", Price: 200, Category: data.Category("Book"), CreatedAt: t1, UpdatedAt: t2}
-var item3 = &data.Item{ID: "id3", Name: "name3", Description: "des3", Price: 300, Category: data.Category("Book"), CreatedAt: t1, UpdatedAt: t2}
-var row1, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", "des1", 100, "Book", t1, t2})
-var row2, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id2", "name2", "des2", 200, "Book", t1, t2})
-var row3, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id3", "name3", "des3", 300, "Book", t1, t2})
-var invalidRow1, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{nil, "name1", "des1", 100, "Book", t1, t2})
-var invalidRow2, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", nil, "des1", 100, "Book", t1, t2})
-var invalidRow3, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", nil, 100, "Book", t1, t2})
-var invalidRow4, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", "des1", nil, "Book", t1, t2})
-var invalidRow5, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", "des1", 100, nil, t1, t2})
-var invalidRow6, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", "des1", 100, "Book", nil, t2})
-var invalidRow7, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", "des1", 100, "Book", t1, nil})
-
-func TestSearchByName(t *testing.T) {
+func TestSearchByName_Spanner(t *testing.T) {
+	var t1 = time.Date(2018, time.January, 1, 12, 30, 0, 0, time.Local)
+	var t2 = time.Date(2018, time.January, 2, 12, 30, 0, 0, time.Local)
+	var item1 = &data.Item{ID: "id1", Name: "name1", Description: "des1", Price: 100, Category: data.Category("Book"), CreatedAt: t1, UpdatedAt: t2}
+	var item2 = &data.Item{ID: "id2", Name: "name2", Description: "des2", Price: 200, Category: data.Category("Book"), CreatedAt: t1, UpdatedAt: t2}
+	var item3 = &data.Item{ID: "id3", Name: "name3", Description: "des3", Price: 300, Category: data.Category("Book"), CreatedAt: t1, UpdatedAt: t2}
+	var row1, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", "des1", 100, "Book", t1, t2})
+	var row2, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id2", "name2", "des2", 200, "Book", t1, t2})
+	var row3, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id3", "name3", "des3", 300, "Book", t1, t2})
+	var invalidRow1, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{nil, "name1", "des1", 100, "Book", t1, t2})
+	var invalidRow2, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", nil, "des1", 100, "Book", t1, t2})
+	var invalidRow3, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", nil, 100, "Book", t1, t2})
+	var invalidRow4, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", "des1", nil, "Book", t1, t2})
+	var invalidRow5, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", "des1", 100, nil, t1, t2})
+	var invalidRow6, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", "des1", 100, "Book", nil, t2})
+	var invalidRow7, _ = gspanner.NewRow([]string{"id", "name", "description", "price", "category", "createdAt", "updatedAt"}, []interface{}{"id1", "name1", "des1", 100, "Book", t1, nil})
 	var tests = []struct {
 		name      string
 		itemName  string
@@ -125,5 +124,16 @@ func TestSearchByName(t *testing.T) {
 				t.Errorf("failed %v", diff)
 			}
 		})
+	}
+}
+
+func TestSearchByName_Dummy(t *testing.T) {
+	c := NewDummyClient()
+	items, err := c.SearchByName(context.TODO(), "", 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(items) != 300 {
+		t.Fatal("items is invalid")
 	}
 }
