@@ -26,4 +26,5 @@ test-local:
 cloudbuild:
 	@gcloud builds submit . \
 		--project=msmini-manchester \
+		--gcs-log-dir="gs://msmini-manchester_cloudbuild/log" \
 	 	--substitutions="_IMAGE=$(IMAGE),_VERSION=$(VERSION)"
