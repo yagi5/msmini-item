@@ -1,3 +1,5 @@
+IMAGE := gcr.io/msmini-manchester/msmini-item:$(VERSION)
+
 LINT_TOOLS=\
 	golang.org/x/lint/golint \
 	github.com/client9/misspell \
@@ -16,5 +18,13 @@ test-coverage-reviewdog:
 	@go get github.com/haya14busa/reviewdog/cmd/reviewdog
 	@reviewdog -conf=.reviewdog.yml -diff="git diff master" -reporter=github-pr-review
 
+.PHONY: test-local
 test-local:
-	go test -race -cover ./...
+	@go test -race -cover ./...
+
+.PHONY: cloudbuild
+cloudbuild:
+	@gcloud builds submit . \
+		--project=msmini-manchester \
+		--gcs-log-dir="gs://msmini-manchester_cloudbuild/log" \
+	 	--substitutions="_IMAGE=$(IMAGE),_VERSION=$(VERSION)"

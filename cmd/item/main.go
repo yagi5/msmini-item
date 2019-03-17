@@ -21,6 +21,8 @@ const (
 	exitError
 )
 
+var version string
+
 func main() {
 	os.Exit(realMain(os.Args))
 }

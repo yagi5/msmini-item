@@ -1,17 +1,12 @@
 version: 2
-defaults: &defaults
-  working_directory: /go/src/github.com/yagi5/msmini-item
-
-golang: &golang
-  <<: *defaults
-  docker:
-    - image: golang
-      environment:
-        TZ: Asia/Tokyo
 
 jobs:
   test:
-    <<: *golang
+    working_directory: /go/src/github.com/yagi5/msmini-item
+    docker:
+      - image: golang
+        environment:
+          TZ: Asia/Tokyo
     steps:
       - checkout
       - run:
@@ -23,16 +18,44 @@ jobs:
           command: |
             bash <(curl -s https://codecov.io/bash)
 
+  cloudbuild:
+    working_directory: /go/src/github.com/yagi5/msmini-item
+    docker:
+      - image: gcr.io/cloud-builders/gcloud
+    steps:
+      - checkout
+      - run:
+          name: Install make
+          command: |
+            apt update -y -q && apt install -y make
+      - run:
+          name: Build docker image on Google CloudBuilder
+          command: |
+            echo "${CLOUD_BUILD_CREDENTIALS_JSON}" > $HOME/sa.json
+            gcloud auth activate-service-account --key-file $HOME/sa.json
+            # only when tag exists, version will be tag
+            export VERSION=${CIRCLE_BRANCH}-$(date +%Y%m%d%H%M%S)
+            [ -n "${CIRCLE_TAG}" ] && export VERSION=${CIRCLE_TAG}
+            make cloudbuild
+
 filters: &filters
-  filters:
-    branches:
-      only: /.*/
-    tags:
-      only: /.*/
 
 workflows:
   version: 2
   build-and-test:
     jobs:
       - test:
-          <<: *filters
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /.*/
+
+      - cloudbuild:
+          requires:
+            - test
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /.*/
