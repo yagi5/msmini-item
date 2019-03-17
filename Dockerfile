@@ -2,6 +2,8 @@ FROM golang:1.12
 
 ARG VERSION
 
+WORKDIR /go/src/github.com/yagi5/msmini-item
+
 RUN go get github.com/golang/dep/cmd/dep
 COPY Gopkg.toml Gopkg.lock ./
 RUN dep ensure -v -vendor-only
