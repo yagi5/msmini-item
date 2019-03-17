@@ -1,4 +1,4 @@
-IMAGE := gcr.io/msmini-item:$(VERSION)
+IMAGE := gcr.io/msmini-manchester/msmini-item:$(VERSION)
 
 LINT_TOOLS=\
 	golang.org/x/lint/golint \
