@@ -1,0 +1,12 @@
+steps:
+- name: gcr.io/cloud-builders/docker
+  args:
+  - build
+  - -t
+  - $_IMAGE
+  - --build-arg
+  - VERSION=$_VERSION
+  - .
+
+images:
+  - $_IMAGE
