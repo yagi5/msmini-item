@@ -25,5 +25,5 @@ test-local:
 .PHONY: cloudbuild
 cloudbuild:
 	@gcloud builds submit . \
-		--project=msmini-item \
+		--project=msmini-manchester \
 	 	--substitutions="_IMAGE=$(IMAGE),_VERSION=$(VERSION)"
