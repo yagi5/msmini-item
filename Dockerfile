@@ -18,4 +18,4 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 COPY --from=0 /go/bin/item /bin/item
 
-CMD ["/bin/server"]
+CMD ["/bin/item"]
