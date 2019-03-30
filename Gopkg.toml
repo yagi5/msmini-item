@@ -73,6 +73,10 @@
   name = "google.golang.org/grpc"
   version = "1.19.0"
 
+[[constraint]]
+	name = "github.com/lithammer/shortuuid"
+  version = "3.0.3"
+
 [prune]
   go-tests = true
   unused-packages = true

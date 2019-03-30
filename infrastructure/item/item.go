@@ -2,8 +2,11 @@ package item
 
 import (
 	"context"
+	"encoding/csv"
 	"fmt"
-	"log"
+	"io"
+	"os"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -25,7 +28,9 @@ type csqlClient struct {
 }
 
 // dummyClient returns dummy data client
-type dummyClient struct{}
+type dummyClient struct {
+	filename string
+}
 
 // NewSpannerClient returns item repository client
 func NewSpannerClient(s spanner.Spanner) repository.Item {
@@ -38,19 +43,12 @@ func NewCloudSQLClient(c cloudsql.CloudSQL) repository.Item {
 }
 
 // NewDummyClient returns item repository client
-func NewDummyClient() repository.Item {
-	return &dummyClient{}
+func NewDummyClient(filename string) repository.Item {
+	return &dummyClient{filename}
 }
 
 // SearchByName returns searched result
 func (c *spannerClient) SearchByName(ctx context.Context, name string, limit int64) (items []*data.Item, err error) {
-	defer func() {
-		if rerr := recover(); rerr != nil {
-			log.Printf("recovered: %v", rerr)
-			items, err = NewDummyClient().SearchByName(ctx, name, limit)
-		}
-	}()
-
 	sql := "SELECT * FROM ITEMS LIMIT @limit"
 	if name != "" {
 		sql = "SELECT * FROM ITEMS WHERE STARTS_WITH(Name, @name) LIMIT @limit"
@@ -107,13 +105,6 @@ func (c *spannerClient) SearchByName(ctx context.Context, name string, limit int
 
 // SearchByName returns searched result
 func (c *csqlClient) SearchByName(ctx context.Context, name string, limit int64) (items []*data.Item, err error) {
-	defer func() {
-		if err := recover(); err != nil {
-			log.Printf("recovered: %v", err)
-			items, err = NewDummyClient().SearchByName(ctx, name, limit)
-		}
-	}()
-
 	query := "SELECT * FROM Items LIMIT $1"
 	args := []interface{}{limit}
 	if name != "" {
@@ -130,18 +121,56 @@ func (c *csqlClient) SearchByName(ctx context.Context, name string, limit int64)
 
 // SearchByName returns searched result
 func (c *dummyClient) SearchByName(ctx context.Context, name string, limit int64) ([]*data.Item, error) {
+	var r *regexp.Regexp
+	if name != "" {
+		r = regexp.MustCompile(fmt.Sprintf(`.?%s.?`, name))
+	} else {
+		r = regexp.MustCompile(`.?`)
+	}
+	f, err := os.Open(c.filename)
+	defer f.Close()
+	if err != nil {
+		return nil, err
+	}
+
 	items := []*data.Item{}
-	for i := 1; i <= 300; i++ {
-		item := &data.Item{
-			ID:          strconv.Itoa(i),
-			Name:        fmt.Sprintf("dummy item #%d", i),
-			Description: fmt.Sprintf("description for dummy item #%d", i),
-			Price:       int64(i),
-			Category:    data.Book,
-			CreatedAt:   time.Date(2019, time.February, 10, 12, 0, 0, i, time.Local),
-			UpdatedAt:   time.Date(2019, time.February, 10, 12, 0, 0, i, time.Local),
+	reader := csv.NewReader(f)
+	for {
+		if int(limit) == len(items) {
+			return items, nil
 		}
-		items = append(items, item)
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		price, err := strconv.Atoi(record[3])
+		if err != nil {
+			return nil, err
+		}
+		format := "2006-01-02 15:04:05"
+		createdAt, err := time.Parse(format, record[5])
+		if err != nil {
+			return nil, err
+		}
+		updatedAt, err := time.Parse(format, record[6])
+		if err != nil {
+			return nil, err
+		}
+		item := &data.Item{
+			ID:          record[0],
+			Name:        record[1],
+			Description: record[2],
+			Price:       int64(price),
+			Category:    data.Category(record[4]),
+			CreatedAt:   createdAt,
+			UpdatedAt:   updatedAt,
+		}
+		if r.MatchString(item.Name) {
+			items = append(items, item)
+		}
 	}
 	return items, nil
 }

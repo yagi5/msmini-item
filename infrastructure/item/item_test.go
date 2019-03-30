@@ -3,6 +3,7 @@ package item
 import (
 	"context"
 	"errors"
+	"log"
 	"testing"
 	"time"
 
@@ -128,12 +129,20 @@ func TestSearchByName_Spanner(t *testing.T) {
 }
 
 func TestSearchByName_Dummy(t *testing.T) {
-	c := NewDummyClient()
-	items, err := c.SearchByName(context.TODO(), "", 1)
+	c := NewDummyClient("./items_test.csv")
+	items, err := c.SearchByName(context.TODO(), "", 20)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(items) != 300 {
+	log.Println(items)
+	if len(items) != 10 {
+		t.Fatal("items is invalid")
+	}
+	items, err = c.SearchByName(context.TODO(), "test", 20)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(items) != 1 {
 		t.Fatal("items is invalid")
 	}
 }

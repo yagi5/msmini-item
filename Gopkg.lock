@@ -58,6 +58,14 @@
   version = "v0.2.0"
 
 [[projects]]
+  digest = "1:582b704bebaa06b48c29b0cec224a6058a09c86883aaddabde889cd1a5f73e1b"
+  name = "github.com/google/uuid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "0cd6bf5da1e1c83f8b45653022c74f71af0538a4"
+  version = "v1.1.1"
+
+[[projects]]
   digest = "1:6d9ec638c0f60d01a25e43940f20dff30cf8b468371ea4df54cbc5b73e07e223"
   name = "github.com/grpc-ecosystem/go-grpc-middleware"
   packages = [
@@ -82,6 +90,14 @@
   pruneopts = "UT"
   revision = "d161d7a76b5661016ad0b085869f77fd410f3e6a"
   version = "v1.2.0"
+
+[[projects]]
+  digest = "1:4853aea8a727b1cc962f687688aef22ce0dd040a9f695c07f303559e4595a152"
+  name = "github.com/lithammer/shortuuid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "1be5ab5d90f6624ae0484197d1bb079a399712f0"
+  version = "v3.0.3"
 
 [[projects]]
   digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
@@ -323,6 +339,7 @@
     "github.com/google/go-cmp/cmp",
     "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap",
     "github.com/jmoiron/sqlx",
+    "github.com/lithammer/shortuuid",
     "github.com/pkg/errors",
     "github.com/yagi5/msmini-proto/client/proto/item",
     "go.uber.org/zap",
