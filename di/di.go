@@ -53,7 +53,7 @@ func (c *client) Container() (*Container, error) {
 }
 
 func (c *client) repository() (repo repository.Item) {
-	repo = item.NewDummyClient("./items.csv")
+	repo = item.NewDummyClient("/bin/items.csv")
 	if os.Getenv("USE_CLOUDSQL") == "1" {
 		repo = item.NewCloudSQLClient(nil)
 	} else if os.Getenv("USE_SPANNER") == "1" {

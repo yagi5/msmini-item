@@ -17,5 +17,7 @@ FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates
 COPY --from=0 /go/bin/item /bin/item
+# TODO embed into binary
+COPY --from=0 /go/src/github.com/yagi5/msmini-item/items.csv /bin/items.csv
 
 CMD ["/bin/item"]
